@@ -17,11 +17,11 @@ def main(page: ft.Page) -> None:
         snack_bar.open = True
         page.update()
 
-    def signed_in() -> None:
+    def home() -> None:
         page.controls = [ft.Text("Signed in!")]
         page.update()
 
-    authenticate = Authenticate(supabase, show_snack, signed_in)
+    authenticate = Authenticate(supabase, show_snack, home)
     page.controls = [authenticate.controls]
     page.update()
 
