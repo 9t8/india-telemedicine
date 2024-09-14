@@ -28,7 +28,7 @@ class Authenticate(ft.Column):
             ],
         )
 
-        self.select_controls = [
+        self.controls = self.select_controls = [
             ft.TextButton(
                 "Sign in",
                 on_click=lambda _: self.open(self.sign_in_controls),
@@ -38,27 +38,22 @@ class Authenticate(ft.Column):
                 on_click=lambda _: self.open(self.sign_up_controls),
             ),
         ]
-
         self.sign_in_controls = [
             ft.TextButton("Back", on_click=lambda _: self.open(self.select_controls)),
             self.email,
             self.password,
             ft.TextButton("Sign in", on_click=self.sign_in),
         ]
-
         self.confirm_type_controls = [
             self.user_type,
             ft.TextButton("Confirm", on_click=self.confirm_type),
         ]
-
         self.sign_up_controls = [
             ft.TextButton("Back", on_click=lambda _: self.open(self.select_controls)),
             self.email,
             self.password,
             ft.TextButton("Sign up", on_click=self.sign_up),
         ]
-
-        self.controls = self.select_controls
 
     def open(self, controls: Sequence[ft.Control]) -> None:
         self.controls = controls

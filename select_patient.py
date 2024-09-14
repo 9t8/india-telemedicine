@@ -24,25 +24,23 @@ class SelectPatient(ft.Column):
         self.name_field = ft.TextField(hint_text="Patient name")
         self.name = ft.Text()
 
-        self.initial_controls = [
+        self.controls = [
             self.patient_id,
             ft.TextButton("Search", on_click=self.search),
         ]
         self.create_controls = [
-            *self.initial_controls,
+            *self.controls,
             self.name_field,
             ft.TextButton("Add patient", on_click=self.create),
         ]
         self.confirm_controls = [
-            *self.initial_controls,
+            *self.controls,
             self.name,
             ft.TextButton(
                 "Confirm",
                 on_click=lambda _: self.on_confirm(self.patient_id.value),
             ),
         ]
-
-        self.controls = self.initial_controls
 
     def open(self, controls: Sequence[ft.Control]) -> None:
         self.controls = controls
