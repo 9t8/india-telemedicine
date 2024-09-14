@@ -15,7 +15,7 @@ class SelectPatient:
         self.show_snack = show_snack
         self.on_confirm = on_confirm
 
-        self.id = ft.TextField(
+        self.patient_id = ft.TextField(
             hint_text="Patient ID",
             keyboard_type=ft.KeyboardType.NUMBER,
         )
@@ -23,7 +23,7 @@ class SelectPatient:
         self.name = ft.Text()
 
         self.initial_controls = [
-            self.id,
+            self.patient_id,
             ft.TextButton("Search", on_click=self.search),
         ]
         self.create_controls = [
@@ -36,7 +36,7 @@ class SelectPatient:
             self.name,
             ft.TextButton(
                 "Confirm",
-                on_click=lambda _: self.on_confirm(self.id.value),
+                on_click=lambda _: self.on_confirm(self.patient_id.value),
             ),
         ]
 
@@ -50,7 +50,7 @@ class SelectPatient:
         response = (
             self.supabase.table("patients")
             .select("name")
-            .eq("id", self.id.value)
+            .eq("id", self.patient_id.value)
             .execute()
             .data
         )
@@ -63,7 +63,7 @@ class SelectPatient:
 
     def create(self, _: None) -> None:
         self.supabase.table("patients").insert(
-            {"id": self.id.value, "name": self.name_field.value},
+            {"id": self.patient_id.value, "name": self.name_field.value},
         ).execute()
 
-        self.on_confirm(self.id.value)
+        self.on_confirm(self.patient_id.value)
