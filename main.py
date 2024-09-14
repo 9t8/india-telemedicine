@@ -20,11 +20,11 @@ def main(page: ft.Page) -> None:
         page.update()
 
     def go_home() -> None:
-        select_patient = SelectPatient(supabase, show_snack, open_patient_history)
+        select_patient = SelectPatient(supabase, show_snack, go_patient_history)
         page.controls = [select_patient.controls]
         page.update()
 
-    def open_patient_history(patient_id: int) -> None:
+    def go_patient_history(patient_id: int) -> None:
         patient_history = PatientHistory(supabase, show_snack, go_home, patient_id)
         page.controls = [patient_history.controls]
         page.update()
