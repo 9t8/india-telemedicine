@@ -1,14 +1,16 @@
 from typing import Sequence
 
 import flet as ft
+from supabase import Client
 
 
 class Authenticate:
-    def __init__(self) -> None:
+    def __init__(self, supabase: Client) -> None:
+        self.supabase = supabase
+
         self.email = ft.TextField(hint_text="Email")
         self.password = ft.TextField(hint_text="Password")
         self.user_options = [
-            ft.dropdown.Option("Patient"),
             ft.dropdown.Option("Nurse"),
             ft.dropdown.Option("Doctor"),
         ]
