@@ -1,8 +1,11 @@
 import flet as ft
 
+from authenticate import Authenticate
+
 
 def main(page: ft.Page) -> None:
-    page.add(ft.SafeArea(ft.Text("Hello, Flet!")))
+    authenticate = Authenticate()
+    page.add(authenticate.page)
 
 
 ft.app(main)
