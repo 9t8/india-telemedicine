@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from supabase import create_client
 
 from authenticate import Authenticate
+from patient_history import PatientHistory
 from select_patient import SelectPatient
 
 load_dotenv()
@@ -18,10 +19,14 @@ def main(page: ft.Page) -> None:
         snack_bar.open = True
         page.update()
 
-    select_patient = SelectPatient(supabase, show_snack, print)
-
     def go_home() -> None:
+        select_patient = SelectPatient(supabase, show_snack, open_patient_history)
         page.controls = [select_patient.controls]
+        page.update()
+
+    def open_patient_history(patient_id: int) -> None:
+        patient_history = PatientHistory(supabase, show_snack, go_home, patient_id)
+        page.controls = [patient_history.controls]
         page.update()
 
     authenticate = Authenticate(supabase, show_snack, go_home)
