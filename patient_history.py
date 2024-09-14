@@ -39,7 +39,7 @@ class Entry(ft.Row):
         self.controls = [ft.Text(name), ft.Text(value)]
 
 
-class PatientHistory:
+class PatientHistory(ft.Column):
     def __init__(
         self,
         supabase: Client,
@@ -47,20 +47,20 @@ class PatientHistory:
         on_exit: Callable,
         patient_id: int,
     ) -> None:
+        super().__init__()
+
         self.supabase = supabase
         self.show_snack = show_snack
         self.on_exit = on_exit
         self.patient_id = patient_id
 
-        self.controls = ft.Column(
-            [
-                ft.TextButton("Exit", on_click=lambda _: self.on_exit()),
-                NewEntry(print),
-                SuggestedEntry(print, "Suggestion"),
-                Entry("Name", "Value"),
-            ],
-        )
+        self.controls = [
+            ft.TextButton("Exit", on_click=lambda _: self.on_exit()),
+            NewEntry(print),
+            SuggestedEntry(print, "Suggestion"),
+            Entry("Name", "Value"),
+        ]
 
     def open(self, controls: Sequence[ft.Control]) -> None:
-        self.controls.controls = controls
-        self.controls.update()
+        self.controls = controls
+        self.update()

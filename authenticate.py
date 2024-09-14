@@ -4,13 +4,15 @@ import flet as ft
 from supabase import Client
 
 
-class Authenticate:
+class Authenticate(ft.Column):
     def __init__(
         self,
         supabase: Client,
         show_snack: Callable,
         on_sign_in: Callable,
     ) -> None:
+        super().__init__()
+
         self.supabase = supabase
         self.show_snack = show_snack
         self.on_sign_in = on_sign_in
@@ -56,11 +58,11 @@ class Authenticate:
             ft.TextButton("Sign up", on_click=self.sign_up),
         ]
 
-        self.controls = ft.Column(self.select_controls)
+        self.controls = self.select_controls
 
     def open(self, controls: Sequence[ft.Control]) -> None:
-        self.controls.controls = controls
-        self.controls.update()
+        self.controls = controls
+        self.update()
 
     def sign_in(self, _: None) -> None:
         self.supabase.auth.sign_in_with_password(

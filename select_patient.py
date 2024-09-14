@@ -4,13 +4,15 @@ import flet as ft
 from supabase import Client
 
 
-class SelectPatient:
+class SelectPatient(ft.Column):
     def __init__(
         self,
         supabase: Client,
         show_snack: Callable,
         on_confirm: Callable,
     ) -> None:
+        super().__init__()
+
         self.supabase = supabase
         self.show_snack = show_snack
         self.on_confirm = on_confirm
@@ -40,11 +42,11 @@ class SelectPatient:
             ),
         ]
 
-        self.controls = ft.Column(self.initial_controls)
+        self.controls = self.initial_controls
 
     def open(self, controls: Sequence[ft.Control]) -> None:
-        self.controls.controls = controls
-        self.controls.update()
+        self.controls = controls
+        self.update()
 
     def search(self, _: None) -> None:
         response = (
