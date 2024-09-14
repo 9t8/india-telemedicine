@@ -15,7 +15,7 @@ class SelectPatient:
         self.show_snack = show_snack
         self.on_success = on_success
 
-        self.patient_id = ft.TextField(
+        self.id = ft.TextField(
             hint_text="Patient ID",
             keyboard_type=ft.KeyboardType.NUMBER,
         )
@@ -23,20 +23,20 @@ class SelectPatient:
         self.name = ft.Text()
 
         self.initial_controls = [
-            self.patient_id,
+            self.id,
             ft.TextButton("Search", on_click=self.search),
         ]
         self.create_controls = [
             *self.initial_controls,
             self.name_field,
-            ft.TextButton("Create patient", on_click=self.create),
+            ft.TextButton("Add patient", on_click=self.create),
         ]
         self.confirm_controls = [
             *self.initial_controls,
             self.name,
             ft.TextButton(
                 "Confirm",
-                on_click=lambda _: self.on_success(self.patient_id.value),
+                on_click=lambda _: self.on_success(self.id.value),
             ),
         ]
 
@@ -50,7 +50,7 @@ class SelectPatient:
         response = (
             self.supabase.table("patients")
             .select("name")
-            .eq("id", self.patient_id.value)
+            .eq("id", self.id.value)
             .execute()
             .data
         )
@@ -63,7 +63,7 @@ class SelectPatient:
 
     def create(self, _: None) -> None:
         self.supabase.table("patients").insert(
-            {"id": self.patient_id.value, "name": self.name_field.value},
+            {"id": self.id.value, "name": self.name_field.value},
         ).execute()
 
-        self.on_success(self.patient_id.value)
+        self.on_success(self.id.value)
