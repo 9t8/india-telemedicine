@@ -58,7 +58,7 @@ class SelectPatient:
         if len(response) == 0:
             self.open(self.create_controls)
         else:
-            self.name.value = f"Name: {response[0]['name']}"
+            self.name.value = response[0]["name"]
             self.open(self.confirm_controls)
 
     def create(self, _: None) -> None:
