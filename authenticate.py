@@ -69,7 +69,7 @@ class Authenticate:
 
         response = (
             self.supabase.table("profiles")
-            .select()
+            .select("")
             .eq("id", self.supabase.auth.get_user().user.id)
             .execute()
             .data
