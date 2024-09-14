@@ -9,11 +9,11 @@ class Authenticate:
         self,
         supabase: Client,
         show_snack: Callable,
-        on_success: Callable,
+        on_sign_in: Callable,
     ) -> None:
         self.supabase = supabase
         self.show_snack = show_snack
-        self.on_success = on_success
+        self.on_sign_in = on_sign_in
 
         self.email = ft.TextField(hint_text="Email")
         self.password = ft.TextField(hint_text="Password", password=True)
@@ -78,7 +78,7 @@ class Authenticate:
         if len(response) == 0:
             self.open(self.confirm_type_controls)
         else:
-            self.on_success()
+            self.on_sign_in()
 
     def confirm_type(self, _: None) -> None:
         if not self.user_type.value:
@@ -92,7 +92,7 @@ class Authenticate:
             },
         ).execute()
 
-        self.on_success()
+        self.on_sign_in()
 
     def sign_up(self, _: None) -> None:
         self.supabase.auth.sign_up(
