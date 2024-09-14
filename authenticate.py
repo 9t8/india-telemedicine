@@ -88,7 +88,7 @@ class Authenticate:
         self.supabase.table("profiles").insert(
             {
                 "id": self.supabase.auth.get_user().user.id,
-                "type": self.user_type.value,
+                "type": self.user_type.value.lower(),
             },
         ).execute()
 
