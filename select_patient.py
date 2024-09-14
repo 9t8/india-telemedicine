@@ -9,11 +9,11 @@ class SelectPatient:
         self,
         supabase: Client,
         show_snack: Callable,
-        success: Callable,
+        on_success: Callable,
     ) -> None:
         self.supabase = supabase
         self.show_snack = show_snack
-        self.user_selected = success
+        self.on_success = on_success
 
         self.patient_id = ft.TextField(
             hint_text="Patient ID",
@@ -34,7 +34,10 @@ class SelectPatient:
         self.confirm_controls = [
             *self.initial_controls,
             self.name,
-            ft.TextButton("Confirm", on_click=self.confirm),
+            ft.TextButton(
+                "Confirm",
+                on_click=lambda _: self.on_success(self.patient_id.value),
+            ),
         ]
 
         self.controls = ft.Column(self.initial_controls)
@@ -59,7 +62,8 @@ class SelectPatient:
             self.open(self.confirm_controls)
 
     def create(self, _: None) -> None:
-        pass
+        self.supabase.table("patients").insert(
+            {"id": self.patient_id.value, "name": self.name_field.value},
+        ).execute()
 
-    def confirm(self, _: None) -> None:
-        pass
+        self.on_success(self.patient_id.value)

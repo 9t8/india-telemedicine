@@ -18,7 +18,7 @@ def main(page: ft.Page) -> None:
         snack_bar.open = True
         page.update()
 
-    select_patient = SelectPatient(supabase, show_snack, None)
+    select_patient = SelectPatient(supabase, show_snack, print)
 
     def go_home() -> None:
         page.controls = [select_patient.controls]
