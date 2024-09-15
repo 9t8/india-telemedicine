@@ -1,3 +1,4 @@
+from itertools import groupby
 from typing import Callable
 
 import flet as ft
@@ -106,7 +107,46 @@ class PatientHistory(ft.Column):
         ]
 
     def generate_suggestions(self) -> None:
+        all_entries = (
+            self.supabase.table("entries")
+            .select("created_at, name, value, patient")
+            .order("patient")
+            .execute()
+            .data
+        )
+        score_table = {}
+        for _, group in groupby(all_entries, lambda entry: entry["patient"]):
+            entries = list(group)
+            for e1 in entries:
+                if e1["name"] not in score_table:
+                    score_table[e1["name"]] = {}
+                for e2 in entries:
+                    if (e2["name"] == e1["name"]) or (e2["value"] is None):
+                        continue
+                    if e2["name"] not in score_table[e1["name"]]:
+                        score_table[e1["name"]][e2["name"]] = 0
+                    score_table[e1["name"]][e2["name"]] += 1 if e2["value"] else -1
+
+        patient_entries = (
+            self.supabase.table("entries")
+            .select("created_at, name, value")
+            .eq("patient", self.patient_id)
+            .order("created_at", desc=True)
+            .execute()
+            .data
+        )
+        total_scores = {}
+        for entry in patient_entries:
+            for name, score in score_table[entry["name"]].items():
+                if name not in total_scores:
+                    total_scores[name] = 0
+                total_scores[name] += score
+
+        total_scores = sorted(total_scores.items(), key=lambda x: x[1], reverse=True)
         self.suggestions = []
+        for name, score in total_scores:
+            if score >= 1:
+                self.suggestions.append(SuggestedEntry(name, self.add_entry))
 
     def reload(self) -> None:
         self.controls = self.starting_controls + self.suggestions + self.entries
