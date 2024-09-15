@@ -23,7 +23,7 @@ class NewEntry(ft.Row):
 
 
 class SuggestedEntry(ft.Row):
-    def __init__(self, name: str, ans_cb: Callable, no_ans_cb: Callable) -> None:
+    def __init__(self, name: str, cb: Callable) -> None:
         super().__init__()
         self.value = ft.TextField(hint_text="Description")
         self.controls = [
@@ -31,9 +31,12 @@ class SuggestedEntry(ft.Row):
             self.value,
             ft.FloatingActionButton(
                 icon=ft.icons.ADD,
-                on_click=lambda _: ans_cb(name, self.value.value),
+                on_click=lambda _: cb(name, self.value.value, answered=True),
             ),
-            ft.TextButton("Unable to answer", on_click=lambda _: no_ans_cb(name)),
+            ft.TextButton(
+                "Unable to answer",
+                on_click=lambda _: cb(name, self.value.value, answered=False),
+            ),
         ]
 
 
@@ -77,8 +80,8 @@ class PatientHistory(ft.Column):
 
         self.starting_controls = [
             ft.TextButton("Exit", on_click=lambda _: self.on_exit()),
-            NewEntry(self.add_answered),
-            SuggestedEntry("Suggestion", self.add_answered, self.add_unanswered),
+            NewEntry(self.add_entry),
+            SuggestedEntry("Suggestion", self.add_entry),
         ]
         self.fetch_history()
         self.controls = self.starting_controls + self.entries
@@ -101,7 +104,7 @@ class PatientHistory(ft.Column):
         self.controls = self.starting_controls + self.entries
         self.update()
 
-    def add_entry(self, name: str, value: str, *, answered: bool) -> None:
+    def add_entry(self, name: str, value: str, *, answered: bool = True) -> None:
         self.supabase.table("text_entries").insert(
             {
                 "name": name,
@@ -114,9 +117,3 @@ class PatientHistory(ft.Column):
 
         self.fetch_history()
         self.reload()
-
-    def add_answered(self, name: str, value: str) -> None:
-        self.add_entry(name, value, answered=True)
-
-    def add_unanswered(self, name: str) -> None:
-        self.add_entry(name, "", answered=False)
