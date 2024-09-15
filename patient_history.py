@@ -87,10 +87,10 @@ class PatientHistory(ft.Column):
         self.starting_controls = [
             ft.TextButton("Exit", on_click=lambda _: self.on_exit()),
             NewEntry(self.add_entry),
-            SuggestedEntry("Suggestion", self.add_entry),
         ]
         self.fetch_history()
-        self.controls = self.starting_controls + self.entries
+        self.generate_suggestions()
+        self.controls = self.starting_controls + self.suggestions + self.entries
 
     def fetch_history(self) -> None:
         response = (
@@ -105,8 +105,11 @@ class PatientHistory(ft.Column):
             Entry(e["created_at"], e["name"], value=e["value"]) for e in response
         ]
 
+    def generate_suggestions(self) -> None:
+        self.suggestions = []
+
     def reload(self) -> None:
-        self.controls = self.starting_controls + self.entries
+        self.controls = self.starting_controls + self.suggestions + self.entries
         self.update()
 
     def add_entry(self, name: str, *, value: bool) -> None:
@@ -120,4 +123,5 @@ class PatientHistory(ft.Column):
         ).execute()
 
         self.fetch_history()
+        self.generate_suggestions()
         self.reload()
