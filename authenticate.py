@@ -71,7 +71,6 @@ class Authenticate(ft.Column):
             .execute()
             .data
         )
-
         if len(response) == 0:
             self.open(self.confirm_type_controls)
         else:
