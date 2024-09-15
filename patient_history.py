@@ -20,7 +20,7 @@ class NewEntry(ft.Row):
 
 
 class SuggestedEntry(ft.Row):
-    def __init__(self, cb: Callable, name: str) -> None:
+    def __init__(self, name: str, ans_cb: Callable, no_ans_cb: Callable) -> None:
         super().__init__()
         self.value = ft.TextField(hint_text="Description")
         self.controls = [
@@ -28,8 +28,9 @@ class SuggestedEntry(ft.Row):
             self.value,
             ft.FloatingActionButton(
                 icon=ft.icons.ADD,
-                on_click=lambda _: cb(name, self.value.value),
+                on_click=lambda _: ans_cb(name, self.value.value),
             ),
+            ft.TextButton("Unable to answer", on_click=lambda _: no_ans_cb(name)),
         ]
 
 
@@ -56,11 +57,33 @@ class PatientHistory(ft.Column):
 
         self.controls = [
             ft.TextButton("Exit", on_click=lambda _: self.on_exit()),
-            NewEntry(print),
-            SuggestedEntry(print, "Suggestion"),
+            NewEntry(self.add_answered),
+            SuggestedEntry("Suggestion", self.add_answered, self.add_unanswered),
             Entry("Name", "Value"),
         ]
 
     def open(self, controls: Sequence[ft.Control]) -> None:
         self.controls = controls
         self.update()
+
+    def add_answered(self, name: str, value: str) -> None:
+        self.supabase.table("text_entries").insert(
+            {
+                "name": name,
+                "value": value,
+                "patient": self.patient_id,
+                "author": self.supabase.auth.get_user().user.id,
+                "answered": True,
+            },
+        ).execute()
+
+    def add_unanswered(self, name: str) -> None:
+        self.supabase.table("text_entries").insert(
+            {
+                "name": name,
+                "value": "",
+                "patient": self.patient_id,
+                "author": self.supabase.auth.get_user().user.id,
+                "answered": False,
+            },
+        ).execute()
