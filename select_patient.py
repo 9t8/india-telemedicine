@@ -54,7 +54,6 @@ class SelectPatient(ft.Column):
             .execute()
             .data
         )
-
         if len(response) == 0:
             self.open(self.create_controls)
         else:
