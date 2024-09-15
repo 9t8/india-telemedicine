@@ -9,33 +9,40 @@ class NewEntry(ft.Row):
         super().__init__()
         self.cb = cb
         self.name = ft.TextField(hint_text="Entry type")
-        self.value = ft.TextField(hint_text="Description")
         self.controls = [
             self.name,
-            self.value,
-            ft.FloatingActionButton(icon=ft.icons.ADD, on_click=self.add_clicked),
+            ft.TextButton(
+                "Yes",
+                on_click=lambda _: self.button_clicked(value=True),
+            ),
+            ft.TextButton(
+                "No",
+                on_click=lambda _: self.button_clicked(value=False),
+            ),
         ]
 
-    def add_clicked(self, _: None) -> None:
-        self.cb(self.name.value, self.value.value)
+    def button_clicked(self, *, value: bool) -> None:
+        self.cb(self.name.value, value=value)
         self.name.value = ""
-        self.value.value = ""
+        self.update()
 
 
 class SuggestedEntry(ft.Row):
     def __init__(self, name: str, cb: Callable) -> None:
         super().__init__()
-        self.value = ft.TextField(hint_text="Description")
         self.controls = [
             ft.Text(name),
-            self.value,
-            ft.FloatingActionButton(
-                icon=ft.icons.ADD,
-                on_click=lambda _: cb(name, self.value.value, answered=True),
+            ft.TextButton(
+                "Yes",
+                on_click=lambda _: cb(name, value=True),
+            ),
+            ft.TextButton(
+                "No",
+                on_click=lambda _: cb(name, value=False),
             ),
             ft.TextButton(
                 "Unable to answer",
-                on_click=lambda _: cb(name, self.value.value, answered=False),
+                on_click=lambda _: cb(name, value=None),
             ),
         ]
 
@@ -45,21 +52,20 @@ class Entry(ft.Row):
         self,
         created_at: str,
         name: str,
-        value: str,
         *,
-        answered: bool,
+        value: bool,
     ) -> None:
         super().__init__()
         self.controls = [
             ft.Text(created_at),
             ft.Text(name),
-            ft.Text(value)
-            if answered
-            else ft.Text(
-                "Not answered",
+            ft.Text(
+                "Unable to answer",
                 bgcolor=ft.colors.ERROR_CONTAINER,
                 color=ft.colors.ON_ERROR_CONTAINER,
-            ),
+            )
+            if value is None
+            else ft.Checkbox(value=value, disabled=True),
         ]
 
 
@@ -88,30 +94,28 @@ class PatientHistory(ft.Column):
 
     def fetch_history(self) -> None:
         response = (
-            self.supabase.table("text_entries")
-            .select("created_at, name, value, answered")
+            self.supabase.table("entries")
+            .select("created_at, name, value")
             .eq("patient", self.patient_id)
             .order("created_at", desc=True)
             .execute()
             .data
         )
         self.entries = [
-            Entry(e["created_at"], e["name"], e["value"], answered=e["answered"])
-            for e in response
+            Entry(e["created_at"], e["name"], value=e["value"]) for e in response
         ]
 
     def reload(self) -> None:
         self.controls = self.starting_controls + self.entries
         self.update()
 
-    def add_entry(self, name: str, value: str, *, answered: bool = True) -> None:
-        self.supabase.table("text_entries").insert(
+    def add_entry(self, name: str, *, value: bool) -> None:
+        self.supabase.table("entries").insert(
             {
                 "name": name,
                 "value": value,
                 "patient": self.patient_id,
                 "author": self.supabase.auth.get_user().user.id,
-                "answered": answered,
             },
         ).execute()
 
