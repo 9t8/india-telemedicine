@@ -20,7 +20,7 @@ def main(page: ft.Page) -> None:
         page.update()
 
     def go_home() -> None:
-        page.controls = [SelectPatient(supabase, show_snack, go_patient_history)]
+        page.controls = [SelectPatient(show_snack, go_patient_history)]
         page.update()
 
     def go_patient_history(patient_id: int) -> None:
