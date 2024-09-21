@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import random
-from typing import Callable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 def gen_rates(symptoms: int, symptoms_per_disease: int) -> list:

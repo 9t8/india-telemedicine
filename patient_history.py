@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from itertools import groupby
-from typing import Callable
 
 import flet as ft
 from supabase import Client
